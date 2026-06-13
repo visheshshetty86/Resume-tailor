@@ -138,8 +138,8 @@ app.post("/extract-job", async (req, res) => {
   }
 });
 
-app.listen(port, () => {
-  console.log(`Resume Tailor server running on http://localhost:${port}`);
+app.listen(port, "127.0.0.1", () => {
+  console.log(`Resume Tailor server running on http://127.0.0.1:${port}`);
 });
 
 function extractJobDetails(html) {
