@@ -34,8 +34,11 @@ app.post("/upload-resume", upload.single("resume"), async (req, res) => {
       text: data.text,
     });
   } catch (error) {
+    const message =
+      error instanceof Error ? error.message : "Failed to extract text from the PDF.";
+
     return res.status(500).json({
-      error: "Failed to extract text from the PDF.",
+      error: `Failed to extract text from the PDF: ${message}`,
     });
   }
 });
