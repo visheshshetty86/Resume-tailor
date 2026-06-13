@@ -1,4 +1,4 @@
-import { AlignmentType, Document, HeadingLevel, Packer, Paragraph, TextRun } from "docx";
+import { AlignmentType, Document, Packer, Paragraph, TextRun } from "docx";
 import { parseResumeText } from "./resumeText.js";
 
 export async function createResumeDocxBuffer(tailoredResumeText) {
@@ -10,11 +10,11 @@ export async function createResumeDocxBuffer(tailoredResumeText) {
         document: {
           run: {
             font: "Arial",
-            size: 22,
+            size: 20,
             color: "111827",
           },
           paragraph: {
-            spacing: { line: 276 },
+            spacing: { line: 276, after: 0 },
           },
         },
       },
@@ -55,15 +55,15 @@ function renderHeader(headerLines) {
     new Paragraph({
       alignment: AlignmentType.CENTER,
       spacing: { after: 160 },
-      children: headerLines.map((line, index) =>
+      children: [
         new TextRun({
-          text: `${index > 0 ? "  •  " : ""}${line}`,
-          bold: index === 0,
+          text: headerLines.join(" | "),
+          bold: true,
           size: 20,
-          color: index === 0 ? "111827" : "4B5563",
+          color: "334155",
           font: "Arial",
-        })
-      ),
+        }),
+      ],
     }),
   ];
 }
@@ -74,11 +74,10 @@ function renderSections(sections) {
   for (const section of sections) {
     paragraphs.push(
       new Paragraph({
-        heading: HeadingLevel.HEADING_2,
-        spacing: { before: 160, after: 80 },
+        spacing: { before: 160, after: 90 },
         border: {
           bottom: {
-            color: "D1D5DB",
+            color: "D9E2EC",
             space: 1,
             style: "single",
             size: 6,
@@ -101,12 +100,12 @@ function renderSections(sections) {
         paragraphs.push(
           new Paragraph({
             bullet: { level: 0 },
-            spacing: { after: 40 },
             indent: { left: 360, hanging: 180 },
+            spacing: { after: 40 },
             children: [
               new TextRun({
                 text: item.text,
-                size: 21,
+                size: 20,
                 font: "Arial",
                 color: "111827",
               }),
@@ -122,7 +121,7 @@ function renderSections(sections) {
           children: [
             new TextRun({
               text: item.text,
-              size: 21,
+              size: 20,
               font: "Arial",
               color: "111827",
             }),

@@ -1,11 +1,20 @@
 import PDFDocument from "pdfkit";
 import { parseResumeText } from "./resumeText.js";
 
+const COLORS = {
+  text: "#0f172a",
+  muted: "#475569",
+  accent: "#0f766e",
+  line: "#dbe3ea",
+  softLine: "#eef2f7",
+  bullet: "#111827",
+};
+
 export async function createResumePdfBuffer(tailoredResumeText) {
   return new Promise((resolve, reject) => {
     const doc = new PDFDocument({
       size: "A4",
-      margins: { top: 54, bottom: 54, left: 54, right: 54 },
+      margins: { top: 48, bottom: 48, left: 48, right: 48 },
       bufferPages: true,
     });
 
@@ -16,80 +25,105 @@ export async function createResumePdfBuffer(tailoredResumeText) {
 
     const { headerLines, sections } = parseResumeText(tailoredResumeText);
 
-    doc.font("Helvetica-Bold").fontSize(22).fillColor("#0f172a");
-    doc.text("Tailored Resume", { align: "center" });
-
-    if (headerLines.length) {
-      doc.moveDown(0.35);
-      doc.font("Helvetica").fontSize(9.5).fillColor("#4b5563");
-      doc.text(headerLines.join("  •  "), { align: "center" });
-    }
-
-    doc.moveDown(0.5);
-    doc
-      .moveTo(doc.page.margins.left, doc.y)
-      .lineTo(doc.page.width - doc.page.margins.right, doc.y)
-      .strokeColor("#d1d5db")
-      .lineWidth(1)
-      .stroke();
-
-    doc.moveDown(0.7);
+    renderTitle(doc);
+    renderHeader(doc, headerLines);
+    renderDivider(doc);
 
     if (!sections.length) {
-      doc.font("Helvetica").fontSize(11).fillColor("#111827");
+      doc.moveDown(1);
+      doc.font("Helvetica").fontSize(10.5).fillColor(COLORS.text);
       doc.text("No tailored resume content was provided.");
       doc.end();
       return;
     }
 
     for (const section of sections) {
-      ensureSpace(doc, 26);
-      doc.moveDown(0.2);
-      doc
-        .font("Helvetica-Bold")
-        .fontSize(12)
-        .fillColor("#0f766e")
-        .text(section.title.toUpperCase());
-
-      doc
-        .moveTo(doc.page.margins.left, doc.y + 2)
-        .lineTo(doc.page.width - doc.page.margins.right, doc.y + 2)
-        .strokeColor("#e5e7eb")
-        .lineWidth(0.8)
-        .stroke();
-
-      doc.moveDown(0.3);
-
-      for (const item of section.items) {
-        ensureSpace(doc, item.type === "bullet" ? 18 : 14);
-
-        if (item.type === "bullet") {
-          const startX = doc.page.margins.left + 10;
-          doc
-            .font("Helvetica")
-            .fontSize(10.5)
-            .fillColor("#111827")
-            .text("•", startX, doc.y, { continued: false });
-          doc.text(item.text, startX + 12, doc.y - 10, {
-            width: doc.page.width - doc.page.margins.left - doc.page.margins.right - 18,
-            lineGap: 2,
-          });
-          doc.moveDown(0.25);
-          continue;
-        }
-
-        doc
-          .font("Helvetica")
-          .fontSize(10.5)
-          .fillColor("#111827")
-          .text(item.text, {
-            lineGap: 2,
-            paragraphGap: 5,
-          });
-      }
+      renderSection(doc, section);
     }
 
     doc.end();
+  });
+}
+
+function renderTitle(doc) {
+  doc.font("Helvetica-Bold").fontSize(22).fillColor(COLORS.text);
+  doc.text("Tailored Resume", { align: "center" });
+}
+
+function renderHeader(doc, headerLines) {
+  if (!headerLines.length) {
+    return;
+  }
+
+  doc.moveDown(0.35);
+
+  const headerText = headerLines
+    .map((line) => line.replace(/\s+/g, " ").trim())
+    .filter(Boolean)
+    .join(" | ");
+
+  doc.font("Helvetica").fontSize(9.5).fillColor(COLORS.muted);
+  doc.text(headerText, { align: "center", lineGap: 2 });
+}
+
+function renderDivider(doc) {
+  doc.moveDown(0.5);
+  doc
+    .moveTo(doc.page.margins.left, doc.y)
+    .lineTo(doc.page.width - doc.page.margins.right, doc.y)
+    .strokeColor(COLORS.line)
+    .lineWidth(1)
+    .stroke();
+  doc.moveDown(0.7);
+}
+
+function renderSection(doc, section) {
+  ensureSpace(doc, 42);
+
+  doc
+    .font("Helvetica-Bold")
+    .fontSize(11.5)
+    .fillColor(COLORS.accent)
+    .text(section.title.toUpperCase());
+
+  doc
+    .moveTo(doc.page.margins.left, doc.y + 3)
+    .lineTo(doc.page.width - doc.page.margins.right, doc.y + 3)
+    .strokeColor(COLORS.softLine)
+    .lineWidth(1)
+    .stroke();
+
+  doc.moveDown(0.35);
+
+  for (const item of section.items) {
+    renderItem(doc, item);
+  }
+}
+
+function renderItem(doc, item) {
+  const contentWidth =
+    doc.page.width - doc.page.margins.left - doc.page.margins.right;
+  const heightHint = item.type === "bullet" ? 20 : 15;
+
+  ensureSpace(doc, heightHint);
+
+  doc.font("Helvetica").fontSize(10).fillColor(COLORS.bullet);
+
+  if (item.type === "bullet") {
+    doc.text(`- ${item.text}`, {
+      width: contentWidth,
+      indent: 10,
+      paragraphGap: 4,
+      lineGap: 3,
+      continued: false,
+    });
+    return;
+  }
+
+  doc.text(item.text, {
+    width: contentWidth,
+    lineGap: 3,
+    paragraphGap: 4,
   });
 }
 

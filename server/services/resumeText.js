@@ -15,8 +15,9 @@ const STANDARD_HEADINGS = new Set([
 
 export function sanitizeTailoredResumeText(text) {
   const lines = String(text || "")
-    .split(/\r?\n/)
-    .map((line) => line.trim())
+    .replace(/\r\n/g, "\n")
+    .split("\n")
+    .map((line) => normalizeResumeLine(line))
     .filter(Boolean);
 
   return lines.filter((line) => !isBadStandaloneLabel(line)).join("\n").trim();
@@ -24,8 +25,8 @@ export function sanitizeTailoredResumeText(text) {
 
 export function parseResumeText(text) {
   const lines = sanitizeTailoredResumeText(text)
-    .split(/\r?\n/)
-    .map((line) => line.trim())
+    .split("\n")
+    .map((line) => normalizeResumeLine(line))
     .filter(Boolean);
 
   const headerLines = [];
@@ -41,9 +42,10 @@ export function parseResumeText(text) {
       continue;
     }
 
+    const isBullet = isResumeBullet(line);
     const item = {
-      type: isResumeBullet(line) ? "bullet" : "text",
-      text: isResumeBullet(line) ? normalizeResumeBullet(line) : line,
+      type: isBullet ? "bullet" : "text",
+      text: isBullet ? normalizeResumeBullet(line) : line,
     };
 
     if (!foundFirstHeading) {
@@ -71,25 +73,44 @@ export function isResumeHeading(line) {
 }
 
 export function normalizeResumeHeading(line) {
-  return line.replace(/[:\s]+$/, "");
+  return normalizeResumeLine(line).replace(/[:\s]+$/, "");
 }
 
 export function isResumeBullet(line) {
-  return /^[-*•]\s+/.test(line);
+  return /^[-*\u2022\u00b7\u2013\u2014]\s+/.test(line) || /^\d+[.)]\s+/.test(line);
 }
 
 export function normalizeResumeBullet(line) {
-  return line.replace(/^[-*•]\s+/, "");
+  return normalizeResumeLine(line)
+    .replace(/^[-*\u2022\u00b7\u2013\u2014]\s+/, "")
+    .replace(/^\d+[.)]\s+/, "");
 }
 
 function isBadStandaloneLabel(line) {
-  if (!/^[A-Za-z][A-Za-z0-9\s/&-]{0,30}:$/.test(line)) {
+  const cleaned = normalizeResumeLine(line);
+
+  if (!/^[A-Za-z][A-Za-z0-9\s/&-]{0,30}:$/.test(cleaned)) {
     return false;
   }
 
-  return !STANDARD_HEADINGS.has(normalizeLine(line));
+  return !STANDARD_HEADINGS.has(normalizeLine(cleaned));
 }
 
 function normalizeLine(line) {
-  return line.replace(/[:\s]+$/, "").toLowerCase();
+  return normalizeResumeLine(line).replace(/[:\s]+$/, "").toLowerCase();
+}
+
+function normalizeResumeLine(line) {
+  return String(line || "")
+    .replace(/\u00A0/g, " ")
+    .replace(/[\u201c\u201d]/g, '"')
+    .replace(/[\u2018\u2019]/g, "'")
+    .replace(/^\s*#{1,6}\s*/, "")
+    .replace(/\*\*(.*?)\*\*/g, "$1")
+    .replace(/__(.*?)__/g, "$1")
+    .replace(/`([^`]*)`/g, "$1")
+    .replace(/^(\s*)[*\u2022\u00b7\u2013\u2014]\s+/, "$1- ")
+    .replace(/^(\s*)\d+[.)]\s+/, "$1- ")
+    .replace(/\s+/g, " ")
+    .trim();
 }
