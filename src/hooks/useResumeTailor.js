@@ -55,7 +55,7 @@ function useResumeTailor() {
         const resumeFormData = new FormData();
         resumeFormData.append("resume", resumeFile);
 
-        const resumeResponse = await fetch("http://localhost:3001/upload-resume", {
+        const resumeResponse = await fetch("/api/upload-resume", {
           method: "POST",
           body: resumeFormData,
         });
@@ -66,7 +66,7 @@ function useResumeTailor() {
           throw new Error(resumePayload?.error || "Failed to upload resume.");
         }
 
-        const jobResponse = await fetch("http://localhost:3001/extract-job", {
+        const jobResponse = await fetch("/api/extract-job", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -88,7 +88,13 @@ function useResumeTailor() {
         });
         setStatus("Resume and job details loaded successfully. Ready for tailoring logic.");
       } catch (error) {
-        setStatus(error instanceof Error ? error.message : "Something went wrong.");
+        if (error instanceof TypeError && error.message === "Failed to fetch") {
+          setStatus(
+            "Could not reach the backend server. Make sure `npm run server` is running on port 3001."
+          );
+        } else {
+          setStatus(error instanceof Error ? error.message : "Something went wrong.");
+        }
       } finally {
         setIsProcessing(false);
       }
