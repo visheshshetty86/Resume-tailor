@@ -7,7 +7,7 @@ export async function tailorResumeWithOpenAI({ resumeText, jobDescription }) {
     throw new Error("OPENAI_API_KEY is not set.");
   }
 
-  const model = process.env.OPENAI_MODEL || "gpt-4.1-mini";
+  const model = process.env.OPENAI_MODEL || "gpt-5.4-mini";
   const instructions = [
     "You are a resume tailoring assistant.",
     "Rewrite the resume so it is better aligned to the job description.",

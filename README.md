@@ -86,7 +86,7 @@ Response:
 Environment variables:
 
 - `OPENAI_API_KEY` is required
-- `OPENAI_MODEL` is optional, defaulting to `gpt-4.1-mini`
+- `OPENAI_MODEL` is optional, defaulting to `gpt-5.4-mini`
 
 ## Available Scripts
 
