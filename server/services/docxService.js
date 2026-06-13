@@ -1,7 +1,14 @@
 import { Document, HeadingLevel, Packer, Paragraph, TextRun } from "docx";
+import {
+  isResumeBullet,
+  isResumeHeading,
+  normalizeResumeBullet,
+  normalizeResumeHeading,
+  sanitizeTailoredResumeText,
+} from "./resumeText.js";
 
 export async function createResumeDocxBuffer(tailoredResumeText) {
-  const sections = buildSections(tailoredResumeText);
+  const sections = buildSections(sanitizeTailoredResumeText(tailoredResumeText));
 
   const doc = new Document({
     sections: [
@@ -37,10 +44,10 @@ function buildSections(text) {
   const paragraphs = [];
 
   for (const line of lines) {
-    if (isHeading(line)) {
+    if (isResumeHeading(line)) {
       paragraphs.push(
         new Paragraph({
-          text: normalizeHeading(line),
+          text: normalizeResumeHeading(line),
           heading: HeadingLevel.HEADING_2,
           spacing: { before: 200, after: 120 },
         })
@@ -48,10 +55,10 @@ function buildSections(text) {
       continue;
     }
 
-    if (isBullet(line)) {
+    if (isResumeBullet(line)) {
       paragraphs.push(
         new Paragraph({
-          text: normalizeBullet(line),
+          text: normalizeResumeBullet(line),
           bullet: { level: 0 },
           spacing: { after: 40 },
         })
@@ -81,22 +88,4 @@ function buildSections(text) {
           spacing: { after: 80 },
         }),
       ];
-}
-
-function isHeading(line) {
-  return /^(summary|professional summary|experience|work experience|skills|education|projects|certifications|achievements|profile|objective)[:\s]*$/i.test(
-    line
-  ) || /^[A-Z][A-Z\s/&-]{2,}$/.test(line);
-}
-
-function normalizeHeading(line) {
-  return line.replace(/[:\s]+$/, "");
-}
-
-function isBullet(line) {
-  return /^[-*•]\s+/.test(line);
-}
-
-function normalizeBullet(line) {
-  return line.replace(/^[-*•]\s+/, "");
 }

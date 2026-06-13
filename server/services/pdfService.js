@@ -1,4 +1,11 @@
 import PDFDocument from "pdfkit";
+import {
+  isResumeBullet,
+  isResumeHeading,
+  normalizeResumeBullet,
+  normalizeResumeHeading,
+  sanitizeTailoredResumeText,
+} from "./resumeText.js";
 
 export async function createResumePdfBuffer(tailoredResumeText) {
   return new Promise((resolve, reject) => {
@@ -13,7 +20,8 @@ export async function createResumePdfBuffer(tailoredResumeText) {
     doc.on("end", () => resolve(Buffer.concat(chunks)));
     doc.on("error", reject);
 
-    doc.font("Helvetica-Bold")
+    doc
+      .font("Helvetica-Bold")
       .fontSize(20)
       .fillColor("#111827")
       .text("Tailored Resume", { align: "center" });
@@ -27,35 +35,38 @@ export async function createResumePdfBuffer(tailoredResumeText) {
 
     doc.moveDown(1.2);
 
-    const lines = String(tailoredResumeText || "")
+    const lines = sanitizeTailoredResumeText(tailoredResumeText)
       .split(/\r?\n/)
       .map((line) => line.trim())
       .filter(Boolean);
 
     if (!lines.length) {
-      doc.fontSize(11).fillColor("#111827").text("No tailored resume content was provided.");
+      doc
+        .fontSize(11)
+        .fillColor("#111827")
+        .text("No tailored resume content was provided.");
       doc.end();
       return;
     }
 
     for (const line of lines) {
-      if (isHeading(line)) {
+      if (isResumeHeading(line)) {
         doc.moveDown(0.4);
         doc
           .font("Helvetica-Bold")
           .fontSize(12)
           .fillColor("#0f172a")
-          .text(normalizeHeading(line), { continued: false });
+          .text(normalizeResumeHeading(line), { continued: false });
         doc.moveDown(0.2);
         continue;
       }
 
-      if (isBullet(line)) {
+      if (isResumeBullet(line)) {
         doc
           .font("Helvetica")
           .fontSize(10.5)
           .fillColor("#111827")
-          .list([normalizeBullet(line)], { bulletIndent: 14, textIndent: 6 });
+          .list([normalizeResumeBullet(line)], { bulletIndent: 14, textIndent: 6 });
         continue;
       }
 
@@ -71,22 +82,4 @@ export async function createResumePdfBuffer(tailoredResumeText) {
 
     doc.end();
   });
-}
-
-function isHeading(line) {
-  return /^(summary|professional summary|experience|work experience|skills|education|projects|certifications|achievements|profile|objective)[:\s]*$/i.test(
-    line
-  ) || /^[A-Z][A-Z\s/&-]{2,}$/.test(line);
-}
-
-function normalizeHeading(line) {
-  return line.replace(/[:\s]+$/, "");
-}
-
-function isBullet(line) {
-  return /^[-*•]\s+/.test(line);
-}
-
-function normalizeBullet(line) {
-  return line.replace(/^[-*•]\s+/, "");
 }

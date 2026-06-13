@@ -1,3 +1,5 @@
+import { sanitizeTailoredResumeText } from "./resumeText.js";
+
 const OPENAI_API_URL = "https://api.openai.com/v1/responses";
 
 export async function tailorResumeWithOpenAI({ resumeText, jobDescription }) {
@@ -60,7 +62,7 @@ export async function tailorResumeWithOpenAI({ resumeText, jobDescription }) {
     throw new Error("OpenAI returned no resume text.");
   }
 
-  return tailoredResume.trim();
+  return sanitizeTailoredResumeText(tailoredResume);
 }
 
 async function readJsonSafe(response) {
