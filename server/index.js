@@ -88,7 +88,11 @@ app.post("/extract-job", async (req, res) => {
       });
     }
 
-    const response = await fetch(url, {
+    const normalizedUrl = new URL(url);
+    normalizedUrl.search = "";
+    normalizedUrl.hash = "";
+
+    const response = await fetch(normalizedUrl.toString(), {
       headers: {
         "user-agent":
           "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36",
@@ -105,7 +109,7 @@ app.post("/extract-job", async (req, res) => {
     }
 
     const html = await response.text();
-    const blockingReason = detectBlockingPage(html, response.url);
+    const blockingReason = detectBlockingPage(html, response.url, hostname);
     if (blockingReason) {
       return res.status(403).json({
         error: blockingReason,
@@ -293,9 +297,10 @@ function cleanText(value) {
   return text || null;
 }
 
-function detectBlockingPage(html, finalUrl) {
+function detectBlockingPage(html, finalUrl, sourceHost) {
   const loweredHtml = html.toLowerCase();
   const loweredUrl = (finalUrl || "").toLowerCase();
+  const loweredHost = (sourceHost || "").toLowerCase();
 
   const authwallHints = [
     "sign in to linkedin",
@@ -307,6 +312,25 @@ function detectBlockingPage(html, finalUrl) {
 
   if (authwallHints.some((hint) => loweredHtml.includes(hint) || loweredUrl.includes(hint))) {
     return "LinkedIn returned a login/auth page instead of the job details page. Try opening the job in a logged-in browser and copy the direct /jobs/view/ URL.";
+  }
+
+  const botBlockHints = [
+    "access denied",
+    "for security reasons",
+    "enable javascript",
+    "captcha",
+    "robot",
+    "not a bot",
+    "blocked",
+    "unusual traffic",
+  ];
+
+  if (botBlockHints.some((hint) => loweredHtml.includes(hint) || loweredUrl.includes(hint))) {
+    if (loweredHost.includes("naukri.com")) {
+      return "Naukri returned a protected or bot-check page instead of the job content. Try a different Naukri URL or paste the job description manually.";
+    }
+
+    return "The job site returned a protected or bot-check page instead of the job content. Try a direct job URL or paste the description manually.";
   }
 
   const isLinkedInRedirectShell =
