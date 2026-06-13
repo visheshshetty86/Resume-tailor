@@ -2,6 +2,7 @@ import express from "express";
 import cors from "cors";
 import multer from "multer";
 import pdfParse from "pdf-parse";
+import "dotenv/config";
 import { tailorResumeWithOpenAI } from "./services/openaiService.js";
 import { createResumeDocxBuffer } from "./services/docxService.js";
 

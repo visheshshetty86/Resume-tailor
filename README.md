@@ -99,6 +99,13 @@ Environment variables:
 - `OPENAI_API_KEY` is required
 - `OPENAI_MODEL` is optional, defaulting to `gpt-5.4-mini`
 
+Create a local `.env` file in the project root with the same keys:
+
+```bash
+OPENAI_API_KEY=your_openai_api_key_here
+OPENAI_MODEL=gpt-5.4-mini
+```
+
 ## Available Scripts
 
 - `npm run dev` starts the local development server
