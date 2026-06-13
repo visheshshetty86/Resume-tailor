@@ -9,6 +9,7 @@ function useResumeTailor() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [jobDetails, setJobDetails] = useState(null);
   const [tailoredResume, setTailoredResume] = useState("");
+  const [isDownloading, setIsDownloading] = useState(false);
 
   const canTailor = useMemo(
     () => Boolean(resumeFile && jobUrl.trim() && !isProcessing),
@@ -124,16 +125,59 @@ function useResumeTailor() {
     })();
   };
 
+  const handleDownloadDocx = async () => {
+    if (!tailoredResume.trim()) {
+      setStatus("Generate a tailored resume before downloading DOCX.");
+      return;
+    }
+
+    setIsDownloading(true);
+    setStatus("Preparing DOCX download...");
+
+    try {
+      const response = await fetch("/api/download-tailored-resume-docx", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ tailoredResume }),
+      });
+
+      if (!response.ok) {
+        const payload = await readApiResponse(response);
+        throw new Error(payload?.error || "Failed to generate DOCX.");
+      }
+
+      const blob = await response.blob();
+      const objectUrl = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = objectUrl;
+      link.download = "tailored-resume.docx";
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      URL.revokeObjectURL(objectUrl);
+
+      setStatus("DOCX file downloaded successfully.");
+    } catch (error) {
+      setStatus(error instanceof Error ? error.message : "Failed to download DOCX.");
+    } finally {
+      setIsDownloading(false);
+    }
+  };
+
   return {
     resumeFile,
     jobUrl,
     status,
     isProcessing,
+    isDownloading,
     jobDetails,
     tailoredResume,
     setJobUrl,
     handleFileChange,
     handleTailor,
+    handleDownloadDocx,
     canTailor,
   };
 }
