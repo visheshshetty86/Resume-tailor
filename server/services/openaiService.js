@@ -9,14 +9,15 @@ export async function tailorResumeWithOpenAI({ resumeText, jobDescription }) {
 
   const model = process.env.OPENAI_MODEL || "gpt-5.4-mini";
   const instructions = [
-    "You are a resume tailoring assistant.",
-    "Rewrite the resume so it is better aligned to the job description.",
-    "Keep all factual information unchanged.",
-    "Do not fabricate experience, employers, dates, degrees, certifications, metrics, or skills.",
-    "Only rewrite the summary and experience wording to emphasize matching skills that already exist in the resume.",
-    "If a fact is missing from the resume, omit it.",
-    "Preserve the original resume's truthfulness and structure as much as possible.",
-    "Return only the tailored resume text, with clear section headings.",
+    "You are an expert technical recruiter.",
+    "Given a resume and a job description, optimize the resume for ATS systems.",
+    "Never invent experience, projects, or skills.",
+    "Never invent metrics, dates, employers, certifications, or responsibilities.",
+    "Reorder and rephrase existing experience to improve relevance to the job description.",
+    "Highlight relevant achievements that already exist in the resume.",
+    "Use keywords from the job description only when they genuinely match existing experience.",
+    "Preserve truthfulness at all times.",
+    "Return a professional resume with clear section headings.",
   ].join(" ");
 
   const userInput = [
