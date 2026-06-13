@@ -31,44 +31,56 @@ function App() {
     <AppShell>
       <Header />
 
-      <main className="mx-auto flex w-full max-w-6xl flex-1 flex-col gap-6 px-4 py-6 sm:px-6 lg:px-8">
-        <section className="grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
+      <main className="mx-auto flex w-full max-w-7xl flex-1 flex-col gap-6 px-4 py-5 sm:px-6 lg:px-8">
+        <section className="grid gap-6 xl:grid-cols-[minmax(0,1.2fr)_minmax(300px,0.8fr)]">
           <div className="space-y-6">
-            <div className="rounded-3xl border border-white/10 bg-white/5 p-6 shadow-glow backdrop-blur-xl sm:p-8">
-              <div className="mb-6 space-y-3">
-                <span className="inline-flex w-fit items-center rounded-full border border-cyan-400/20 bg-cyan-400/10 px-3 py-1 text-xs font-medium tracking-wide text-cyan-200">
-                  Frontend only workflow
-                </span>
-                <h1 className="max-w-xl text-3xl font-semibold tracking-tight text-white sm:text-4xl">
-                  Tailor resumes to any job listing in a clean, focused workspace.
+            <div className="overflow-hidden rounded-3xl border border-white/10 bg-white/5 shadow-glow backdrop-blur-xl">
+              <div className="border-b border-white/10 px-6 py-6 sm:px-8">
+                <div className="mb-4 flex flex-wrap items-center gap-2">
+                  <span className="inline-flex items-center rounded-full border border-cyan-400/20 bg-cyan-400/10 px-3 py-1 text-xs font-medium tracking-wide text-cyan-200">
+                    ATS-optimized resume flow
+                  </span>
+                  <span className="inline-flex items-center rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs text-slate-300">
+                    Responsive UI
+                  </span>
+                </div>
+
+                <h1 className="max-w-3xl text-3xl font-semibold tracking-tight text-white sm:text-4xl">
+                  Tailor resumes for a job listing without losing the original
+                  truth.
                 </h1>
-                <p className="max-w-2xl text-sm leading-6 text-slate-300 sm:text-base">
-                  Upload a PDF resume, paste the job listing URL, and prepare a
-                  tailored draft. The backend can plug in later without changing
-                  the interface.
+                <p className="mt-3 max-w-3xl text-sm leading-6 text-slate-300 sm:text-base">
+                  Upload a PDF resume, paste a job URL or job description, and
+                  generate a cleaner ATS-friendly version with a before/after
+                  comparison and DOCX export.
                 </p>
               </div>
 
-              <div className="grid gap-4">
+              <div className="grid gap-4 px-6 py-6 sm:px-8">
                 <ResumeUpload file={resumeFile} onChange={handleFileChange} />
-                <JobUrlInput value={jobUrl} onChange={setJobUrl} />
-                <JobDescriptionInput
-                  value={jobDescription}
-                  onChange={setJobDescription}
-                />
-                <TailorButton
-                  onClick={handleTailor}
-                  disabled={!canTailor}
-                  isProcessing={isProcessing}
-                />
-                <button
-                  type="button"
-                  onClick={handleDownloadDocx}
-                  disabled={!tailoredResume || isDownloading}
-                  className="inline-flex items-center justify-center rounded-2xl border border-emerald-300/30 bg-emerald-400/10 px-5 py-3 text-sm font-semibold text-emerald-200 transition hover:bg-emerald-400/20 disabled:cursor-not-allowed disabled:border-white/10 disabled:bg-white/5 disabled:text-slate-500"
-                >
-                  {isDownloading ? "Preparing DOCX..." : "Download DOCX"}
-                </button>
+                <div className="grid gap-4 xl:grid-cols-2">
+                  <JobUrlInput value={jobUrl} onChange={setJobUrl} />
+                  <JobDescriptionInput
+                    value={jobDescription}
+                    onChange={setJobDescription}
+                  />
+                </div>
+
+                <div className="flex flex-col gap-3 sm:flex-row">
+                  <TailorButton
+                    onClick={handleTailor}
+                    disabled={!canTailor}
+                    isProcessing={isProcessing}
+                  />
+                  <button
+                    type="button"
+                    onClick={handleDownloadDocx}
+                    disabled={!tailoredResume || isDownloading}
+                    className="inline-flex items-center justify-center rounded-2xl border border-emerald-300/30 bg-emerald-400/10 px-5 py-3 text-sm font-semibold text-emerald-200 transition hover:bg-emerald-400/20 disabled:cursor-not-allowed disabled:border-white/10 disabled:bg-white/5 disabled:text-slate-500"
+                  >
+                    {isDownloading ? "Preparing DOCX..." : "Download DOCX"}
+                  </button>
+                </div>
               </div>
             </div>
 
@@ -86,7 +98,9 @@ function App() {
             />
           </div>
 
-          <ProcessPreview resumeFile={resumeFile} jobUrl={jobUrl} />
+          <div className="xl:sticky xl:top-6 xl:self-start">
+            <ProcessPreview resumeFile={resumeFile} jobUrl={jobUrl} />
+          </div>
         </section>
       </main>
     </AppShell>

@@ -1,10 +1,10 @@
 function StatusPanel({ status, resumeFile, jobUrl, jobDetails, tailoredResume }) {
   return (
-    <section className="rounded-3xl border border-white/10 bg-white/5 p-6 backdrop-blur-xl">
+    <section className="rounded-3xl border border-white/10 bg-white/5 p-5 backdrop-blur-xl sm:p-6">
       <h3 className="text-base font-semibold text-white">Current state</h3>
       <p className="mt-3 text-sm leading-6 text-slate-300">{status}</p>
 
-      <dl className="mt-6 grid gap-4 sm:grid-cols-2">
+      <dl className="mt-5 grid gap-4 md:grid-cols-2">
         <div className="rounded-2xl border border-white/10 bg-slate-950/60 p-4">
           <dt className="text-xs uppercase tracking-[0.2em] text-slate-500">
             Resume
@@ -24,7 +24,7 @@ function StatusPanel({ status, resumeFile, jobUrl, jobDetails, tailoredResume })
       </dl>
 
       {jobDetails ? (
-        <div className="mt-4 grid gap-4 rounded-2xl border border-cyan-300/20 bg-cyan-300/5 p-4 sm:grid-cols-3">
+        <div className="mt-4 grid gap-4 rounded-2xl border border-cyan-300/20 bg-cyan-300/5 p-4 sm:grid-cols-2 xl:grid-cols-3">
           <div>
             <p className="text-xs uppercase tracking-[0.2em] text-cyan-200/70">
               Source
@@ -45,11 +45,11 @@ function StatusPanel({ status, resumeFile, jobUrl, jobDetails, tailoredResume })
             </p>
             <p className="mt-2 text-sm text-white">{jobDetails.company || "Not found"}</p>
           </div>
-          <div className="sm:col-span-3">
+          <div className="sm:col-span-2 xl:col-span-3">
             <p className="text-xs uppercase tracking-[0.2em] text-cyan-200/70">
               Description
             </p>
-            <p className="mt-2 line-clamp-4 text-sm leading-6 text-slate-200">
+            <p className="mt-2 max-h-48 overflow-auto text-sm leading-6 text-slate-200">
               {jobDetails.description}
             </p>
           </div>
@@ -61,7 +61,7 @@ function StatusPanel({ status, resumeFile, jobUrl, jobDetails, tailoredResume })
           <p className="text-xs uppercase tracking-[0.2em] text-emerald-200/70">
             Tailored Resume
           </p>
-          <pre className="mt-3 max-h-[420px] whitespace-pre-wrap break-words text-sm leading-6 text-slate-100">
+          <pre className="mt-3 max-h-[24rem] overflow-auto whitespace-pre-wrap break-words text-sm leading-6 text-slate-100">
             {tailoredResume}
           </pre>
         </div>
