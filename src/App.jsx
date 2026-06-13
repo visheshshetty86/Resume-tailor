@@ -2,6 +2,7 @@ import AppShell from "./components/layout/AppShell";
 import Header from "./components/layout/Header";
 import ResumeUpload from "./components/resume/ResumeUpload";
 import JobUrlInput from "./components/job/JobUrlInput";
+import JobDescriptionInput from "./components/job/JobDescriptionInput";
 import TailorButton from "./components/action/TailorButton";
 import StatusPanel from "./components/StatusPanel";
 import ProcessPreview from "./components/ProcessPreview";
@@ -16,7 +17,9 @@ function App() {
     isDownloading,
     jobDetails,
     tailoredResume,
+    jobDescription,
     setJobUrl,
+    setJobDescription,
     handleFileChange,
     handleTailor,
     handleDownloadDocx,
@@ -48,6 +51,10 @@ function App() {
               <div className="grid gap-4">
                 <ResumeUpload file={resumeFile} onChange={handleFileChange} />
                 <JobUrlInput value={jobUrl} onChange={setJobUrl} />
+                <JobDescriptionInput
+                  value={jobDescription}
+                  onChange={setJobDescription}
+                />
                 <TailorButton
                   onClick={handleTailor}
                   disabled={!canTailor}

@@ -27,6 +27,14 @@ function StatusPanel({ status, resumeFile, jobUrl, jobDetails, tailoredResume })
         <div className="mt-4 grid gap-4 rounded-2xl border border-cyan-300/20 bg-cyan-300/5 p-4 sm:grid-cols-3">
           <div>
             <p className="text-xs uppercase tracking-[0.2em] text-cyan-200/70">
+              Source
+            </p>
+            <p className="mt-2 text-sm text-white">
+              {jobDetails.source === "manual" ? "Manual paste" : "URL extract"}
+            </p>
+          </div>
+          <div>
+            <p className="text-xs uppercase tracking-[0.2em] text-cyan-200/70">
               Title
             </p>
             <p className="mt-2 text-sm text-white">{jobDetails.title || "Not found"}</p>

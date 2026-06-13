@@ -3,6 +3,7 @@ import { useMemo, useState } from "react";
 function useResumeTailor() {
   const [resumeFile, setResumeFile] = useState(null);
   const [jobUrl, setJobUrl] = useState("");
+  const [jobDescription, setJobDescription] = useState("");
   const [status, setStatus] = useState(
     "Upload a resume PDF and paste a job listing URL to prepare a tailored draft."
   );
@@ -12,8 +13,8 @@ function useResumeTailor() {
   const [isDownloading, setIsDownloading] = useState(false);
 
   const canTailor = useMemo(
-    () => Boolean(resumeFile && jobUrl.trim() && !isProcessing),
-    [resumeFile, jobUrl, isProcessing]
+    () => Boolean(resumeFile && (jobUrl.trim() || jobDescription.trim()) && !isProcessing),
+    [resumeFile, jobUrl, jobDescription, isProcessing]
   );
 
   const handleFileChange = (event) => {
@@ -44,12 +45,14 @@ function useResumeTailor() {
 
   const handleTailor = () => {
     if (!canTailor) {
-      setStatus("Upload a PDF resume and add a valid job URL before tailoring.");
+      setStatus(
+        "Upload a PDF resume and add a job URL or paste a job description before tailoring."
+      );
       return;
     }
 
     setIsProcessing(true);
-    setStatus("Sending resume and job URL to the server...");
+    setStatus("Sending resume to the server...");
     setJobDetails(null);
     setTailoredResume("");
 
@@ -69,18 +72,32 @@ function useResumeTailor() {
           throw new Error(resumePayload?.error || "Failed to upload resume.");
         }
 
-        const jobResponse = await fetch("/api/extract-job", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ url: jobUrl.trim() }),
-        });
+        let jobPayload = null;
+        const manualJobDescription = jobDescription.trim();
 
-        const jobPayload = await readApiResponse(jobResponse);
+        if (manualJobDescription) {
+          jobPayload = {
+            title: null,
+            company: null,
+            description: manualJobDescription,
+            source: "manual",
+          };
+        } else {
+          setStatus("Extracting job details from the URL...");
 
-        if (!jobResponse.ok) {
-          throw new Error(jobPayload?.error || "Failed to extract job details.");
+          const jobResponse = await fetch("/api/extract-job", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ url: jobUrl.trim() }),
+          });
+
+          jobPayload = await readApiResponse(jobResponse);
+
+          if (!jobResponse.ok) {
+            throw new Error(jobPayload?.error || "Failed to extract job details.");
+          }
         }
 
         setJobDetails({
@@ -88,6 +105,7 @@ function useResumeTailor() {
           title: jobPayload.title,
           company: jobPayload.company,
           description: jobPayload.description,
+          source: jobPayload.source || "url",
         });
 
         setStatus("Generating tailored resume...");
@@ -110,7 +128,11 @@ function useResumeTailor() {
         }
 
         setTailoredResume(tailorPayload.tailoredResume || "");
-        setStatus("Tailored resume generated successfully.");
+        setStatus(
+          manualJobDescription
+            ? "Tailored resume generated successfully from pasted job description."
+            : "Tailored resume generated successfully from extracted job description."
+        );
       } catch (error) {
         if (error instanceof TypeError && error.message === "Failed to fetch") {
           setStatus(
@@ -169,12 +191,14 @@ function useResumeTailor() {
   return {
     resumeFile,
     jobUrl,
+    jobDescription,
     status,
     isProcessing,
     isDownloading,
     jobDetails,
     tailoredResume,
     setJobUrl,
+    setJobDescription,
     handleFileChange,
     handleTailor,
     handleDownloadDocx,

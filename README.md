@@ -5,6 +5,7 @@ A clean Vite + React + Tailwind frontend for a resume tailoring workflow.
 Users can:
 - Upload a resume PDF
 - Paste a job listing URL
+- Paste a job description manually when a site blocks extraction
 - Trigger a "Tailor Resume" action
 
 This is frontend only for now. The UI is structured so a backend can be added later without changing the overall layout.
@@ -108,5 +109,5 @@ Environment variables:
 ## Notes
 
 - The resume upload accepts PDF files only
-- The tailoring action is currently a UI placeholder
-- No backend is connected yet
+- If LinkedIn or Naukri blocks URL extraction, paste the job description manually
+- The manual job-description field overrides URL extraction when filled
