@@ -38,9 +38,20 @@ npm install
 npm run dev
 ```
 
+## Backend
+
+Run the simple Express server for PDF upload and extraction:
+
+```bash
+npm run server
+```
+
+POST a PDF file to `/upload-resume` using the form field name `resume`.
+
 ## Available Scripts
 
 - `npm run dev` starts the local development server
+- `npm run server` starts the Express API
 - `npm run build` creates a production build
 - `npm run preview` previews the production build locally
 
