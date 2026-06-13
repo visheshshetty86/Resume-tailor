@@ -6,10 +6,12 @@ function useResumeTailor() {
   const [status, setStatus] = useState(
     "Upload a resume PDF and paste a job listing URL to prepare a tailored draft."
   );
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [jobDetails, setJobDetails] = useState(null);
 
   const canTailor = useMemo(
-    () => Boolean(resumeFile && jobUrl.trim()),
-    [resumeFile, jobUrl]
+    () => Boolean(resumeFile && jobUrl.trim() && !isProcessing),
+    [resumeFile, jobUrl, isProcessing]
   );
 
   const handleFileChange = (event) => {
@@ -44,15 +46,61 @@ function useResumeTailor() {
       return;
     }
 
-    setStatus(
-      `Ready to tailor ${resumeFile.name} for the provided job listing. Backend integration can be added next.`
-    );
+    setIsProcessing(true);
+    setStatus("Sending resume and job URL to the server...");
+    setJobDetails(null);
+
+    void (async () => {
+      try {
+        const resumeFormData = new FormData();
+        resumeFormData.append("resume", resumeFile);
+
+        const resumeResponse = await fetch("http://localhost:3001/upload-resume", {
+          method: "POST",
+          body: resumeFormData,
+        });
+
+        const resumePayload = await resumeResponse.json();
+
+        if (!resumeResponse.ok) {
+          throw new Error(resumePayload?.error || "Failed to upload resume.");
+        }
+
+        const jobResponse = await fetch("http://localhost:3001/extract-job", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ url: jobUrl.trim() }),
+        });
+
+        const jobPayload = await jobResponse.json();
+
+        if (!jobResponse.ok) {
+          throw new Error(jobPayload?.error || "Failed to extract job details.");
+        }
+
+        setJobDetails({
+          resumeText: resumePayload.text,
+          title: jobPayload.title,
+          company: jobPayload.company,
+          description: jobPayload.description,
+        });
+        setStatus("Resume and job details loaded successfully. Ready for tailoring logic.");
+      } catch (error) {
+        setStatus(error instanceof Error ? error.message : "Something went wrong.");
+      } finally {
+        setIsProcessing(false);
+      }
+    })();
   };
 
   return {
     resumeFile,
     jobUrl,
     status,
+    isProcessing,
+    jobDetails,
     setJobUrl,
     handleFileChange,
     handleTailor,

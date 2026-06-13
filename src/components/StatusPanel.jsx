@@ -1,4 +1,4 @@
-function StatusPanel({ status, resumeFile, jobUrl }) {
+function StatusPanel({ status, resumeFile, jobUrl, jobDetails }) {
   return (
     <section className="rounded-3xl border border-white/10 bg-white/5 p-6 backdrop-blur-xl">
       <h3 className="text-base font-semibold text-white">Current state</h3>
@@ -22,6 +22,31 @@ function StatusPanel({ status, resumeFile, jobUrl }) {
           </dd>
         </div>
       </dl>
+
+      {jobDetails ? (
+        <div className="mt-4 grid gap-4 rounded-2xl border border-cyan-300/20 bg-cyan-300/5 p-4 sm:grid-cols-3">
+          <div>
+            <p className="text-xs uppercase tracking-[0.2em] text-cyan-200/70">
+              Title
+            </p>
+            <p className="mt-2 text-sm text-white">{jobDetails.title || "Not found"}</p>
+          </div>
+          <div>
+            <p className="text-xs uppercase tracking-[0.2em] text-cyan-200/70">
+              Company
+            </p>
+            <p className="mt-2 text-sm text-white">{jobDetails.company || "Not found"}</p>
+          </div>
+          <div className="sm:col-span-3">
+            <p className="text-xs uppercase tracking-[0.2em] text-cyan-200/70">
+              Description
+            </p>
+            <p className="mt-2 line-clamp-4 text-sm leading-6 text-slate-200">
+              {jobDetails.description}
+            </p>
+          </div>
+        </div>
+      ) : null}
     </section>
   );
 }

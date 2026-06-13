@@ -12,6 +12,8 @@ function App() {
     resumeFile,
     jobUrl,
     status,
+    isProcessing,
+    jobDetails,
     setJobUrl,
     handleFileChange,
     handleTailor,
@@ -43,11 +45,20 @@ function App() {
               <div className="grid gap-4">
                 <ResumeUpload file={resumeFile} onChange={handleFileChange} />
                 <JobUrlInput value={jobUrl} onChange={setJobUrl} />
-                <TailorButton onClick={handleTailor} disabled={!canTailor} />
+                <TailorButton
+                  onClick={handleTailor}
+                  disabled={!canTailor}
+                  isProcessing={isProcessing}
+                />
               </div>
             </div>
 
-            <StatusPanel status={status} resumeFile={resumeFile} jobUrl={jobUrl} />
+            <StatusPanel
+              status={status}
+              resumeFile={resumeFile}
+              jobUrl={jobUrl}
+              jobDetails={jobDetails}
+            />
           </div>
 
           <ProcessPreview resumeFile={resumeFile} jobUrl={jobUrl} />
