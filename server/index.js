@@ -85,6 +85,13 @@ app.post("/extract-job", async (req, res) => {
     }
 
     const html = await response.text();
+    const blockingReason = detectBlockingPage(html, response.url);
+    if (blockingReason) {
+      return res.status(403).json({
+        error: blockingReason,
+      });
+    }
+
     const extracted = extractJobDetails(html);
 
     if (!extracted.description) {
@@ -264,4 +271,33 @@ function cleanText(value) {
 
   const text = stripHtml(value);
   return text || null;
+}
+
+function detectBlockingPage(html, finalUrl) {
+  const loweredHtml = html.toLowerCase();
+  const loweredUrl = (finalUrl || "").toLowerCase();
+
+  const authwallHints = [
+    "sign in to linkedin",
+    "join linkedin",
+    "authwall",
+    "checkpoint",
+    "login to linkedin",
+  ];
+
+  if (authwallHints.some((hint) => loweredHtml.includes(hint) || loweredUrl.includes(hint))) {
+    return "LinkedIn returned a login/auth page instead of the job details page. Try opening the job in a logged-in browser and copy the direct /jobs/view/ URL.";
+  }
+
+  const isLinkedInRedirectShell =
+    loweredUrl.includes("/feed/") ||
+    loweredUrl.includes("/jobs/collections/") ||
+    loweredUrl.includes("/authwall") ||
+    loweredUrl.includes("/checkpoint/");
+
+  if (isLinkedInRedirectShell) {
+    return "LinkedIn redirected to a non-job page. Use a direct /jobs/view/ URL from the actual job listing, not a collections or recommended page.";
+  }
+
+  return null;
 }
