@@ -2,6 +2,7 @@ import express from "express";
 import cors from "cors";
 import multer from "multer";
 import pdfParse from "pdf-parse";
+import { tailorResumeWithOpenAI } from "./services/openaiService.js";
 
 const app = express();
 const upload = multer({ storage: multer.memoryStorage() });
@@ -138,6 +139,43 @@ app.post("/extract-job", async (req, res) => {
         error instanceof Error
           ? error.message
           : "Failed to extract job details from the provided URL.",
+    });
+  }
+});
+
+app.post("/tailor-resume", async (req, res) => {
+  try {
+    const resumeText =
+      typeof req.body?.resumeText === "string" ? req.body.resumeText.trim() : "";
+    const jobDescription =
+      typeof req.body?.jobDescription === "string"
+        ? req.body.jobDescription.trim()
+        : "";
+
+    if (!resumeText) {
+      return res.status(400).json({ error: "Missing resumeText." });
+    }
+
+    if (!jobDescription) {
+      return res.status(400).json({ error: "Missing jobDescription." });
+    }
+
+    const tailoredResume = await tailorResumeWithOpenAI({
+      resumeText,
+      jobDescription,
+    });
+
+    return res.json({
+      tailoredResume,
+    });
+  } catch (error) {
+    console.error("Tailor resume error:", error);
+
+    return res.status(500).json({
+      error:
+        error instanceof Error
+          ? error.message
+          : "Failed to tailor the resume with OpenAI.",
     });
   }
 });

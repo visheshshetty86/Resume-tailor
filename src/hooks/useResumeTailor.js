@@ -8,6 +8,7 @@ function useResumeTailor() {
   );
   const [isProcessing, setIsProcessing] = useState(false);
   const [jobDetails, setJobDetails] = useState(null);
+  const [tailoredResume, setTailoredResume] = useState("");
 
   const canTailor = useMemo(
     () => Boolean(resumeFile && jobUrl.trim() && !isProcessing),
@@ -49,6 +50,7 @@ function useResumeTailor() {
     setIsProcessing(true);
     setStatus("Sending resume and job URL to the server...");
     setJobDetails(null);
+    setTailoredResume("");
 
     void (async () => {
       try {
@@ -86,7 +88,28 @@ function useResumeTailor() {
           company: jobPayload.company,
           description: jobPayload.description,
         });
-        setStatus("Resume and job details loaded successfully. Ready for tailoring logic.");
+
+        setStatus("Generating tailored resume...");
+
+        const tailorResponse = await fetch("/api/tailor-resume", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            resumeText: resumePayload.text,
+            jobDescription: jobPayload.description,
+          }),
+        });
+
+        const tailorPayload = await readApiResponse(tailorResponse);
+
+        if (!tailorResponse.ok) {
+          throw new Error(tailorPayload?.error || "Failed to tailor resume.");
+        }
+
+        setTailoredResume(tailorPayload.tailoredResume || "");
+        setStatus("Tailored resume generated successfully.");
       } catch (error) {
         if (error instanceof TypeError && error.message === "Failed to fetch") {
           setStatus(
@@ -107,6 +130,7 @@ function useResumeTailor() {
     status,
     isProcessing,
     jobDetails,
+    tailoredResume,
     setJobUrl,
     handleFileChange,
     handleTailor,

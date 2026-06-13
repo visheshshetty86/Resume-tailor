@@ -66,6 +66,28 @@ The response shape is:
 
 If extraction fails, the API returns a meaningful `error` message and a 4xx/5xx status code.
 
+To tailor a resume with OpenAI, send JSON to `/tailor-resume`:
+
+```json
+{
+  "resumeText": "Extracted resume text",
+  "jobDescription": "Job description text"
+}
+```
+
+Response:
+
+```json
+{
+  "tailoredResume": "Tailored resume text"
+}
+```
+
+Environment variables:
+
+- `OPENAI_API_KEY` is required
+- `OPENAI_MODEL` is optional, defaulting to `gpt-4.1-mini`
+
 ## Available Scripts
 
 - `npm run dev` starts the local development server

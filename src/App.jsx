@@ -14,6 +14,7 @@ function App() {
     status,
     isProcessing,
     jobDetails,
+    tailoredResume,
     setJobUrl,
     handleFileChange,
     handleTailor,
@@ -58,6 +59,7 @@ function App() {
               resumeFile={resumeFile}
               jobUrl={jobUrl}
               jobDetails={jobDetails}
+              tailoredResume={tailoredResume}
             />
           </div>
 
