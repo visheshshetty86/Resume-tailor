@@ -60,7 +60,7 @@ function useResumeTailor() {
           body: resumeFormData,
         });
 
-        const resumePayload = await resumeResponse.json();
+        const resumePayload = await readApiResponse(resumeResponse);
 
         if (!resumeResponse.ok) {
           throw new Error(resumePayload?.error || "Failed to upload resume.");
@@ -74,7 +74,7 @@ function useResumeTailor() {
           body: JSON.stringify({ url: jobUrl.trim() }),
         });
 
-        const jobPayload = await jobResponse.json();
+        const jobPayload = await readApiResponse(jobResponse);
 
         if (!jobResponse.ok) {
           throw new Error(jobPayload?.error || "Failed to extract job details.");
@@ -115,3 +115,17 @@ function useResumeTailor() {
 }
 
 export default useResumeTailor;
+
+async function readApiResponse(response) {
+  const text = await response.text();
+
+  if (!text) {
+    return null;
+  }
+
+  try {
+    return JSON.parse(text);
+  } catch {
+    return { error: text };
+  }
+}
