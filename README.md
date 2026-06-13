@@ -48,6 +48,24 @@ npm run server
 
 POST a PDF file to `/upload-resume` using the form field name `resume`.
 
+To extract a LinkedIn or Naukri job post, send JSON to `/extract-job`:
+
+```json
+{ "url": "https://www.linkedin.com/jobs/view/..." }
+```
+
+The response shape is:
+
+```json
+{
+  "title": "Job title",
+  "company": "Company name",
+  "description": "Job description text"
+}
+```
+
+If extraction fails, the API returns a meaningful `error` message and a 4xx/5xx status code.
+
 ## Available Scripts
 
 - `npm run dev` starts the local development server
