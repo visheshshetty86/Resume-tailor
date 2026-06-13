@@ -6,6 +6,7 @@ import JobDescriptionInput from "./components/job/JobDescriptionInput";
 import TailorButton from "./components/action/TailorButton";
 import StatusPanel from "./components/StatusPanel";
 import ProcessPreview from "./components/ProcessPreview";
+import ResumeComparison from "./components/ResumeComparison";
 import useResumeTailor from "./hooks/useResumeTailor";
 
 function App() {
@@ -76,6 +77,11 @@ function App() {
               resumeFile={resumeFile}
               jobUrl={jobUrl}
               jobDetails={jobDetails}
+              tailoredResume={tailoredResume}
+            />
+
+            <ResumeComparison
+              originalResumeText={jobDetails?.resumeText || ""}
               tailoredResume={tailoredResume}
             />
           </div>
