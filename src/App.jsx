@@ -39,9 +39,9 @@ function App() {
                 <span className="inline-flex items-center rounded-full border border-cyan-400/20 bg-cyan-400/10 px-3 py-1 text-xs font-medium tracking-wide text-cyan-200">
                   ATS-optimized resume flow
                 </span>
-                <span className="inline-flex items-center rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs text-slate-300">
+                {/* <span className="inline-flex items-center rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs text-slate-300">
                   Responsive UI
-                </span>
+                </span> */}
               </div>
 
               <h1 className="max-w-3xl text-3xl font-semibold tracking-tight text-white sm:text-4xl">

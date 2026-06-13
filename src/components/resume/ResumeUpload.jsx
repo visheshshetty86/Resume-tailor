@@ -8,8 +8,7 @@ function ResumeUpload({ file, onChange }) {
         <div className="min-w-0 flex-1">
           <p className="text-sm font-medium text-white">Resume PDF upload</p>
           <p className="mt-1 text-sm leading-6 text-slate-400">
-            Drop in a PDF or click to browse. This keeps the upload experience
-            simple and polished.
+            Drop in a PDF or click to browse.
           </p>
           <p className="mt-2 text-xs text-slate-500">
             Accepted format: `.pdf`
