@@ -24,6 +24,7 @@ function App() {
     handleFileChange,
     handleTailor,
     handleDownloadDocx,
+    handleDownloadPdf,
     canTailor,
   } = useResumeTailor();
 
@@ -79,6 +80,14 @@ function App() {
                     className="inline-flex items-center justify-center rounded-2xl border border-emerald-300/30 bg-emerald-400/10 px-5 py-3 text-sm font-semibold text-emerald-200 transition hover:bg-emerald-400/20 disabled:cursor-not-allowed disabled:border-white/10 disabled:bg-white/5 disabled:text-slate-500"
                   >
                     {isDownloading ? "Preparing DOCX..." : "Download DOCX"}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleDownloadPdf}
+                    disabled={!tailoredResume || isDownloading}
+                    className="inline-flex items-center justify-center rounded-2xl border border-sky-300/30 bg-sky-400/10 px-5 py-3 text-sm font-semibold text-sky-200 transition hover:bg-sky-400/20 disabled:cursor-not-allowed disabled:border-white/10 disabled:bg-white/5 disabled:text-slate-500"
+                  >
+                    {isDownloading ? "Preparing PDF..." : "Download PDF"}
                   </button>
                 </div>
               </div>

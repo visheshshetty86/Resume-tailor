@@ -5,6 +5,7 @@ import pdfParse from "pdf-parse";
 import "dotenv/config";
 import { tailorResumeWithOpenAI } from "./services/openaiService.js";
 import { createResumeDocxBuffer } from "./services/docxService.js";
+import { createResumePdfBuffer } from "./services/pdfService.js";
 
 const app = express();
 const upload = multer({ storage: multer.memoryStorage() });
@@ -212,6 +213,37 @@ app.post("/download-tailored-resume-docx", async (req, res) => {
         error instanceof Error
           ? error.message
           : "Failed to generate the DOCX file.",
+    });
+  }
+});
+
+app.post("/download-tailored-resume-pdf", async (req, res) => {
+  try {
+    const tailoredResume =
+      typeof req.body?.tailoredResume === "string"
+        ? req.body.tailoredResume.trim()
+        : "";
+
+    if (!tailoredResume) {
+      return res.status(400).json({ error: "Missing tailoredResume." });
+    }
+
+    const buffer = await createResumePdfBuffer(tailoredResume);
+    const fileName = "tailored-resume.pdf";
+
+    res.setHeader("Content-Type", "application/pdf");
+    res.setHeader("Content-Disposition", `attachment; filename="${fileName}"`);
+    res.setHeader("Content-Length", buffer.length);
+
+    return res.send(buffer);
+  } catch (error) {
+    console.error("PDF generation error:", error);
+
+    return res.status(500).json({
+      error:
+        error instanceof Error
+          ? error.message
+          : "Failed to generate the PDF file.",
     });
   }
 });

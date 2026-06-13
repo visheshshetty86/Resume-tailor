@@ -188,6 +188,47 @@ function useResumeTailor() {
     }
   };
 
+  const handleDownloadPdf = async () => {
+    if (!tailoredResume.trim()) {
+      setStatus("Generate a tailored resume before downloading PDF.");
+      return;
+    }
+
+    setIsDownloading(true);
+    setStatus("Preparing PDF download...");
+
+    try {
+      const response = await fetch("/api/download-tailored-resume-pdf", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ tailoredResume }),
+      });
+
+      if (!response.ok) {
+        const payload = await readApiResponse(response);
+        throw new Error(payload?.error || "Failed to generate PDF.");
+      }
+
+      const blob = await response.blob();
+      const objectUrl = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = objectUrl;
+      link.download = "tailored-resume.pdf";
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      URL.revokeObjectURL(objectUrl);
+
+      setStatus("PDF file downloaded successfully.");
+    } catch (error) {
+      setStatus(error instanceof Error ? error.message : "Failed to download PDF.");
+    } finally {
+      setIsDownloading(false);
+    }
+  };
+
   return {
     resumeFile,
     jobUrl,
@@ -202,6 +243,7 @@ function useResumeTailor() {
     handleFileChange,
     handleTailor,
     handleDownloadDocx,
+    handleDownloadPdf,
     canTailor,
   };
 }

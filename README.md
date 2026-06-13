@@ -94,6 +94,16 @@ To generate a downloadable DOCX from the tailored resume text, send JSON to `/do
 
 The response is a downloadable `.docx` file.
 
+To generate a downloadable PDF from the tailored resume text, send JSON to `/download-tailored-resume-pdf`:
+
+```json
+{
+  "tailoredResume": "Tailored resume text"
+}
+```
+
+The response is a downloadable `.pdf` file.
+
 Environment variables:
 
 - `OPENAI_API_KEY` is required
