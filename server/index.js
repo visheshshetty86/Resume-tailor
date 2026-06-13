@@ -14,33 +14,50 @@ app.get("/", (_req, res) => {
   res.json({ message: "Resume Tailor API is running." });
 });
 
-app.post("/upload-resume", upload.single("resume"), async (req, res) => {
-  try {
-    if (!req.file) {
-      return res.status(400).json({ error: "No PDF file uploaded." });
+app.post("/upload-resume", (req, res) => {
+  upload.single("resume")(req, res, async (uploadError) => {
+    try {
+      if (uploadError) {
+        console.error("Resume upload middleware error:", uploadError);
+        return res.status(400).json({
+          error: `Failed to upload resume file: ${uploadError.message}`,
+        });
+      }
+
+      if (!req.file) {
+        return res.status(400).json({ error: "No PDF file uploaded." });
+      }
+
+      const isPdf =
+        req.file.mimetype === "application/pdf" ||
+        req.file.originalname.toLowerCase().endsWith(".pdf");
+
+      if (!isPdf) {
+        return res.status(400).json({ error: "Only PDF files are allowed." });
+      }
+
+      if (!req.file.buffer?.length) {
+        return res.status(400).json({ error: "Uploaded PDF file is empty." });
+      }
+
+      const data = await pdfParse(req.file.buffer);
+
+      return res.json({
+        text: data.text,
+      });
+    } catch (error) {
+      const message =
+        error instanceof Error
+          ? error.message
+          : "Failed to extract text from the PDF.";
+
+      console.error("Resume parsing error:", error);
+
+      return res.status(500).json({
+        error: `Failed to extract text from the PDF: ${message}`,
+      });
     }
-
-    const isPdf =
-      req.file.mimetype === "application/pdf" ||
-      req.file.originalname.toLowerCase().endsWith(".pdf");
-
-    if (!isPdf) {
-      return res.status(400).json({ error: "Only PDF files are allowed." });
-    }
-
-    const data = await pdfParse(req.file.buffer);
-
-    return res.json({
-      text: data.text,
-    });
-  } catch (error) {
-    const message =
-      error instanceof Error ? error.message : "Failed to extract text from the PDF.";
-
-    return res.status(500).json({
-      error: `Failed to extract text from the PDF: ${message}`,
-    });
-  }
+  });
 });
 
 app.post("/extract-job", async (req, res) => {
