@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
 
 function useResumeTailor() {
+  const API_URL = import.meta.env.VITE_API_URL;
   const [resumeFile, setResumeFile] = useState(null);
   const [jobUrl, setJobUrl] = useState("");
   const [jobDescription, setJobDescription] = useState("");
@@ -61,7 +62,7 @@ function useResumeTailor() {
         const resumeFormData = new FormData();
         resumeFormData.append("resume", resumeFile);
 
-        const resumeResponse = await fetch("/api/upload-resume", {
+        const resumeResponse = await fetch(`${API_URL}/upload-resume`, {
           method: "POST",
           body: resumeFormData,
         });
@@ -85,7 +86,7 @@ function useResumeTailor() {
         } else {
           setStatus("Extracting job details from the URL...");
 
-          const jobResponse = await fetch("/api/extract-job", {
+          const jobResponse = await fetch(`${API_URL}/extract-job`, {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
@@ -110,7 +111,7 @@ function useResumeTailor() {
 
         setStatus("Generating tailored resume...");
 
-        const tailorResponse = await fetch("/api/tailor-resume", {
+        const tailorResponse = await fetch(`${API_URL}/tailor-resume`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -136,7 +137,7 @@ function useResumeTailor() {
       } catch (error) {
         if (error instanceof TypeError && error.message === "Failed to fetch") {
           setStatus(
-            "Could not reach the backend server. Make sure `npm run server` is running on port 3001."
+            "Could not reach the backend service. Please try again later."
           );
         } else {
           setStatus(error instanceof Error ? error.message : "Something went wrong.");
@@ -157,7 +158,7 @@ function useResumeTailor() {
     setStatus("Preparing DOCX download...");
 
     try {
-      const response = await fetch("/api/download-tailored-resume-docx", {
+      const response = await fetch(`${API_URL}/download-tailored-resume-docx`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -198,7 +199,7 @@ function useResumeTailor() {
     setStatus("Preparing PDF download...");
 
     try {
-      const response = await fetch("/api/download-tailored-resume-pdf", {
+      const response = await fetch(`${API_URL}/download-tailored-resume-pdf`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
