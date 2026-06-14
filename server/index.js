@@ -248,8 +248,8 @@ app.post("/download-tailored-resume-pdf", async (req, res) => {
   }
 });
 
-app.listen(port, "127.0.0.1", () => {
-  console.log(`Resume Tailor server running on http://127.0.0.1:${port}`);
+app.listen(port, () => {
+  console.log(`Resume Tailor server running on port ${port}`);
 });
 
 function extractJobDetails(html) {
