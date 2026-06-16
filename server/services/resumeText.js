@@ -13,6 +13,13 @@ const STANDARD_HEADINGS = new Set([
   "contact",
 ]);
 
+const METADATA_HEADINGS = [
+  /^ats[\s-]*(optimized|aligned|alignment|keyword alignment|keywords|targeting notes|notes|profile summary|keywords matched to experience)\b/i,
+  /^(targeting notes|recommendations?|suggestions?|analysis|observations?)\b/i,
+  /^(if you want|i can also|strong match|alignment summary)\b/i,
+  /^additional information\b/i,
+];
+
 export function sanitizeTailoredResumeText(text) {
   const lines = String(text || "")
     .replace(/\r\n/g, "\n")
@@ -20,7 +27,15 @@ export function sanitizeTailoredResumeText(text) {
     .map((line) => normalizeResumeLine(line))
     .filter(Boolean);
 
-  return lines.filter((line) => !isBadStandaloneLabel(line)).join("\n").trim();
+  const cutoff = lines.findIndex((line) => isMetadataLine(line));
+  const relevantLines = cutoff === -1 ? lines : lines.slice(0, cutoff);
+
+  return relevantLines
+    .filter((line) => !isMetadataLine(line))
+    .filter((line) => !isBadStandaloneLabel(line))
+    .filter((line) => !/^\s*---+\s*$/.test(line))
+    .join("\n")
+    .trim();
 }
 
 export function parseResumeText(text) {
@@ -53,12 +68,9 @@ export function parseResumeText(text) {
       continue;
     }
 
-    if (!currentSection) {
-      currentSection = { title: "Additional Information", items: [] };
-      sections.push(currentSection);
+    if (currentSection) {
+      currentSection.items.push(item);
     }
-
-    currentSection.items.push(item);
   }
 
   return {
@@ -69,6 +81,10 @@ export function parseResumeText(text) {
 
 export function isResumeHeading(line) {
   const normalized = normalizeLine(line);
+  if (isMetadataLine(line)) {
+    return false;
+  }
+
   return STANDARD_HEADINGS.has(normalized) || /^[A-Z][A-Z\s/&-]{2,}$/.test(line);
 }
 
@@ -94,6 +110,12 @@ function isBadStandaloneLabel(line) {
   }
 
   return !STANDARD_HEADINGS.has(normalizeLine(cleaned));
+}
+
+function isMetadataLine(line) {
+  const cleaned = normalizeResumeLine(line);
+
+  return METADATA_HEADINGS.some((pattern) => pattern.test(cleaned));
 }
 
 function normalizeLine(line) {

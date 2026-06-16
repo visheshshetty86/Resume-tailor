@@ -25,9 +25,7 @@ export async function createResumePdfBuffer(tailoredResumeText) {
 
     const { headerLines, sections } = parseResumeText(tailoredResumeText);
 
-    renderTitle(doc);
     renderHeader(doc, headerLines);
-    renderDivider(doc);
 
     if (!sections.length) {
       doc.moveDown(1);
@@ -45,11 +43,6 @@ export async function createResumePdfBuffer(tailoredResumeText) {
   });
 }
 
-function renderTitle(doc) {
-  doc.font("Helvetica-Bold").fontSize(22).fillColor(COLORS.text);
-  doc.text("Tailored Resume", { align: "center" });
-}
-
 function renderHeader(doc, headerLines) {
   if (!headerLines.length) {
     return;
@@ -64,17 +57,6 @@ function renderHeader(doc, headerLines) {
 
   doc.font("Helvetica").fontSize(9.5).fillColor(COLORS.muted);
   doc.text(headerText, { align: "center", lineGap: 2 });
-}
-
-function renderDivider(doc) {
-  doc.moveDown(0.5);
-  doc
-    .moveTo(doc.page.margins.left, doc.y)
-    .lineTo(doc.page.width - doc.page.margins.right, doc.y)
-    .strokeColor(COLORS.line)
-    .lineWidth(1)
-    .stroke();
-  doc.moveDown(0.7);
 }
 
 function renderSection(doc, section) {

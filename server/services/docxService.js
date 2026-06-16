@@ -23,19 +23,6 @@ export async function createResumeDocxBuffer(tailoredResumeText) {
       {
         properties: {},
         children: [
-          new Paragraph({
-            alignment: AlignmentType.CENTER,
-            spacing: { after: 120 },
-            children: [
-              new TextRun({
-                text: "Tailored Resume",
-                bold: true,
-                size: 32,
-                color: "0F172A",
-                font: "Arial",
-              }),
-            ],
-          }),
           ...renderHeader(headerLines),
           ...renderSections(sections),
         ],
@@ -75,14 +62,6 @@ function renderSections(sections) {
     paragraphs.push(
       new Paragraph({
         spacing: { before: 160, after: 90 },
-        border: {
-          bottom: {
-            color: "D9E2EC",
-            space: 1,
-            style: "single",
-            size: 6,
-          },
-        },
         children: [
           new TextRun({
             text: section.title.toUpperCase(),
