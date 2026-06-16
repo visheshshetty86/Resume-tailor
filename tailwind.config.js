@@ -4,11 +4,11 @@ export default {
   theme: {
     extend: {
       boxShadow: {
-        glow: "0 20px 60px rgba(56, 189, 248, 0.18)",
+        panel: "0 20px 50px rgba(2, 6, 23, 0.45)",
       },
       backgroundImage: {
         "hero-radial":
-          "radial-gradient(circle at top, rgba(14, 165, 233, 0.22), transparent 34%), radial-gradient(circle at bottom right, rgba(99, 102, 241, 0.18), transparent 28%)",
+          "linear-gradient(180deg, rgba(15, 23, 42, 0.92) 0%, rgba(2, 6, 23, 1) 70%)",
       },
     },
   },
