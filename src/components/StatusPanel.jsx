@@ -1,57 +1,57 @@
 function StatusPanel({ status, resumeFile, jobUrl, jobDetails, tailoredResume }) {
   return (
-    <section className="rounded-3xl border border-slate-800/80 bg-slate-950/75 p-5 shadow-panel sm:p-6">
-      <h3 className="text-sm font-semibold uppercase tracking-[0.2em] text-slate-300">
+    <section className="rounded-[20px] border border-[#252b34] bg-[#111418] p-5 shadow-panel sm:p-6">
+      <h3 className="text-sm font-semibold uppercase tracking-[0.2em] text-[#a7b0bc]">
         Current state
       </h3>
-      <p className="mt-3 text-sm leading-6 text-slate-300">{status}</p>
+      <p className="mt-3 text-sm leading-6 text-[#f5f7fa]">{status}</p>
 
       <dl className="mt-5 grid gap-4 md:grid-cols-2">
-        <div className="rounded-2xl border border-slate-800/80 bg-slate-900/70 p-4">
-          <dt className="text-[11px] uppercase tracking-[0.22em] text-slate-500">
+        <div className="rounded-xl border border-[#252b34] bg-[#171b21] p-4">
+          <dt className="text-[11px] uppercase tracking-[0.22em] text-[#748090]">
             Resume
           </dt>
-          <dd className="mt-2 break-words text-sm text-slate-100">
+          <dd className="mt-2 break-words text-sm text-[#f5f7fa]">
             {resumeFile ? resumeFile.name : "Waiting for upload"}
           </dd>
         </div>
-        <div className="rounded-2xl border border-slate-800/80 bg-slate-900/70 p-4">
-          <dt className="text-[11px] uppercase tracking-[0.22em] text-slate-500">
+        <div className="rounded-xl border border-[#252b34] bg-[#171b21] p-4">
+          <dt className="text-[11px] uppercase tracking-[0.22em] text-[#748090]">
             Job URL
           </dt>
-          <dd className="mt-2 break-all text-sm text-slate-100">
+          <dd className="mt-2 break-all text-sm text-[#f5f7fa]">
             {jobUrl || "Waiting for URL"}
           </dd>
         </div>
       </dl>
 
       {jobDetails ? (
-        <div className="mt-4 grid gap-4 rounded-2xl border border-cyan-300/15 bg-slate-900/60 p-4 sm:grid-cols-2 xl:grid-cols-3">
+        <div className="mt-4 grid gap-4 rounded-xl border border-[#252b34] bg-[#171b21] p-4 sm:grid-cols-2 xl:grid-cols-3">
           <div>
-            <p className="text-[11px] uppercase tracking-[0.22em] text-cyan-200/70">
+            <p className="text-[11px] uppercase tracking-[0.22em] text-[#a7b0bc]">
               Source
             </p>
-            <p className="mt-2 text-sm text-slate-100">
+            <p className="mt-2 text-sm text-[#f5f7fa]">
               {jobDetails.source === "manual" ? "Manual paste" : "URL extract"}
             </p>
           </div>
           <div>
-            <p className="text-[11px] uppercase tracking-[0.22em] text-cyan-200/70">
+            <p className="text-[11px] uppercase tracking-[0.22em] text-[#a7b0bc]">
               Title
             </p>
-            <p className="mt-2 text-sm text-slate-100">{jobDetails.title || "Not found"}</p>
+            <p className="mt-2 text-sm text-[#f5f7fa]">{jobDetails.title || "Not found"}</p>
           </div>
           <div>
-            <p className="text-[11px] uppercase tracking-[0.22em] text-cyan-200/70">
+            <p className="text-[11px] uppercase tracking-[0.22em] text-[#a7b0bc]">
               Company
             </p>
-            <p className="mt-2 text-sm text-slate-100">{jobDetails.company || "Not found"}</p>
+            <p className="mt-2 text-sm text-[#f5f7fa]">{jobDetails.company || "Not found"}</p>
           </div>
           <div className="sm:col-span-2 xl:col-span-3">
-            <p className="text-[11px] uppercase tracking-[0.22em] text-cyan-200/70">
+            <p className="text-[11px] uppercase tracking-[0.22em] text-[#a7b0bc]">
               Description
             </p>
-            <p className="mt-2 max-h-48 overflow-auto text-sm leading-6 text-slate-200">
+            <p className="mt-2 max-h-48 overflow-auto text-sm leading-6 text-[#d4d9e0]">
               {jobDetails.description}
             </p>
           </div>
@@ -59,11 +59,11 @@ function StatusPanel({ status, resumeFile, jobUrl, jobDetails, tailoredResume })
       ) : null}
 
       {tailoredResume ? (
-        <div className="mt-4 rounded-2xl border border-emerald-300/15 bg-slate-900/75 p-4">
-          <p className="text-[11px] uppercase tracking-[0.22em] text-emerald-200/70">
+        <div className="mt-4 rounded-xl border border-[#252b34] bg-[#171b21] p-4">
+          <p className="text-[11px] uppercase tracking-[0.22em] text-[#22c55e]">
             Tailored Resume
           </p>
-          <pre className="mt-3 max-h-[24rem] overflow-auto whitespace-pre-wrap break-words text-sm leading-6 text-slate-100">
+          <pre className="mt-3 max-h-[24rem] overflow-auto whitespace-pre-wrap break-words text-sm leading-6 text-[#f5f7fa]">
             {tailoredResume}
           </pre>
         </div>
